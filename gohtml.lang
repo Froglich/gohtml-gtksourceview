@@ -1,0 +1,146 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+
+ This file is for use with of GtkSourceView
+ 
+ Author: Kim Lindgren <kimlindgren@fastmail.com>
+ 
+ Based on the Django template definition bundled with GtkSourceView
+
+ gohtml-gtksourceview is free software; you can redistribute it and/or
+ modify it under the terms of the GNU Lesser General Public
+ License as published by the Free Software Foundation; either
+ version 2.1 of the License, or (at your option) any later version.
+
+ gohtml-gtksourceview is distributed in the hope that it will be useful,
+ but WITHOUT ANY WARRANTY; without even the implied warranty of
+ MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+ Lesser General Public License for more details.
+
+ You should have received a copy of the GNU Lesser General Public
+ License along with this library; if not, write to the Free Software
+ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
+
+-->
+<language id="gohtml" _name="Go HTML Template" version="2.0" _section="Markup">
+  <metadata>
+    <property name="globs">*.gohtml</property>
+  </metadata>
+
+  <styles>
+    <style id="comment"         name="Comment" map-to="def:comment"/>
+    <style id="error"           name="Error" map-to="def:error"/>
+    <style id="escape"          name="Escaped Character" map-to="def:special-char"/>
+    <style id="string"          name="String" map-to="def:string"/>
+    <style id="keyword"         name="Keyword" map-to="def:keyword"/>
+    <style id="boolean"         name="Boolean value" map-to="def:boolean"/>
+    <style id="floating-point"  name="Floating point number" map-to="def:floating-point"/>
+    <style id="decimal"         name="Decimal number" map-to="def:decimal"/>
+    <style id="octal"           name="Octal number" map-to="def:base-n-integer"/>
+    <style id="hexadecimal"     name="Hexadecimal number" map-to="def:base-n-integer"/>
+  </styles>
+
+  <definitions>
+
+    <context id="comment" style-ref="comment">
+        <start>&lt;!--</start>
+        <end>--\s*&gt;</end>
+        <include>
+            <context ref="def:in-comment"/>
+        </include>
+    </context>
+
+    <context id="close-comment-outside-comment" style-ref="error">
+      <match>\*/(?!\*)</match>
+    </context>
+
+    <context id="double-quoted-string" style-ref="string">
+      <start>"</start>
+      <end>"</end>
+      <include>
+        <context ref="def:line-continue"/>
+      </include>
+    </context>
+
+    <context id="keywords" style-ref="keyword">
+      <prefix></prefix>
+      <suffix></suffix>
+        <keyword>template</keyword>
+        <keyword>if</keyword>
+        <keyword>else</keyword>
+        <keyword>end</keyword>
+        <keyword>range</keyword>
+        <keyword>block</keyword>
+        <keyword>eq</keyword>
+        <keyword>not</keyword>
+        <keyword>or</keyword>
+        <keyword>nil</keyword>
+    </context>
+
+    <context id="boolean" style-ref="boolean">
+      <prefix>\b</prefix>
+      <suffix>\b</suffix>
+        <keyword>false</keyword>
+        <keyword>true</keyword>
+    </context>
+
+    <context id="float" style-ref="floating-point">
+      <match extended="true">
+        (?&lt;![\w\.])
+        ([0-9]+[Ee][+-]?[0-9]+ |
+         ([0-9]*\.[0-9]+ | [0-9]+\.[0-9]*)([Ee][+-]?[0-9]+)?)
+        (?![\w\.])
+      </match>
+    </context>
+
+    <context id="decimal-number" style-ref="decimal">
+      <match extended="true">
+        (?&lt;![\w\.])
+        [+-]?([1-9][0-9]*|0)
+        (?![\w\.])
+      </match>
+    </context>
+
+    <context id="octal-number" style-ref="octal">
+      <match extended="true">
+        (?&lt;![\w\.])
+        [+-]?0[0-7]+
+        (?![\w\.])
+      </match>
+    </context>
+
+    <context id="hexadecimal-number" style-ref="hexadecimal">
+      <match extended="true">
+        (?&lt;![\w\.])
+        [+-]?0x[0-9a-fA-F]+
+        (?![\w\.])
+      </match>
+    </context>
+
+    <context id="gohtml-block" end-at-line-end="true">
+      <start>{{</start>
+      <end>}}</end>
+      <include>
+        <context sub-pattern="0" where="start" style-ref="boolean"/>
+        <context sub-pattern="0" where="end" style-ref="boolean"/>
+        <context ref="double-quoted-string"/>
+        <context ref="keywords"/>
+        <context ref="boolean"/>
+        <context ref="float"/>
+        <context ref="decimal-number"/>
+        <context ref="octal-number"/>
+        <context ref="hexadecimal-number"/>
+      </include>
+    </context>
+
+    <replace id="html:embedded-lang-hook" ref="gohtml-block"/>
+
+    <context id="gohtml">
+      <include>
+        <context ref="gohtml-block"/>
+        <context ref="html:html"/>
+      </include>
+    </context>
+
+  </definitions>
+</language>

@@ -1,2 +1,3 @@
 # gohtml-gtksourceview
-Go HTML-template highlighting for GTKSourceView 4 
+Go HTML-template highlighting for GTKSourceView 4
+
